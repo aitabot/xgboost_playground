@@ -1,0 +1,7 @@
+{
+    "recommendations": [
+        "ms-python.python",
+        "brainfit.vscode-importmagic",
+        "njpwerner.autodocstring"
+    ]
+}
