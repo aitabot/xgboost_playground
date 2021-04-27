@@ -4,3 +4,4 @@ venv
 
 # IPython
 profile_default/
+.env
