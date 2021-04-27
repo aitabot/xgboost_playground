@@ -67,7 +67,8 @@ if __name__ == '__main__':
     Set the variable `symbol` to whatever you're looking for.
     """
     symbol = "AMD"
-    filename = f'./data-{symbol}-{date.today()}.csv'
+    # filename = f'./data-{symbol}-{date.today()}.csv'
+    filename = f'./data.csv'
     data: pd.DataFrame = load_time_series(symbol=symbol)
     data.drop(['4. close', '7. dividend amount',
               '8. split coefficient'], axis=1, inplace=True)
