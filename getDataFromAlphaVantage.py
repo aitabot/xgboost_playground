@@ -50,12 +50,21 @@ def get_indicators(symbol: str, data: pd.DataFrame):
     ema = ema.sort_values(['date'], ascending=[False])
     data[f'EMA_{ema_time_period}'] = ema['EMA']
 
-    # Positive when (the fast)SMA > (the slower)EMA
-    # Generally it shows where support is in an up treand
-    # or resistance when in an down trend
-    # data[f'SMA_{sma_time_period}_gt_EMA{ema_time_period}'] = np.where(
-    #     data[f'SMA_{sma_time_period}'] >= data[f'EMA_{ema_time_period}'], 1.0, 0.0
-    # )
+    # This could be made much simpler, but we need it to have an example on "categorical" data.
+    # For example. Colors would be Categorical. Actually, everything that is not a number can be considered categorical.
+    #
+    # Positive when (the fast)SMA > (the slower)EMA. - "Says" we're in an uptrend.
+    # Negative when not. - "Says" we're in an downtrend.
+    # 0 when equal or NaN. - "Says" nothing.
+    data[f'SMA_{sma_time_period}_gt_EMA{ema_time_period}'] = np.select(
+        [
+            data[f'SMA_{sma_time_period}'] > data[f'EMA_{ema_time_period}'],
+            data[f'SMA_{sma_time_period}'] < data[f'EMA_{ema_time_period}'],
+            data[f'SMA_{sma_time_period}'] == data[f'EMA_{ema_time_period}']
+        ],
+        [1, -1, 0],
+        default=0
+    )
 
     rsi, _ = ti.get_rsi(symbol=symbol, time_period=rsi_time_period)
     rsi = rsi.sort_values(['date'], ascending=[False])
@@ -70,9 +79,10 @@ def get_indicators(symbol: str, data: pd.DataFrame):
     data[f'ROC_{roc_time_period}'] = roc['ROC']
 
     # TODO: refactor into a function
-    # I'm using two different ways of accesing the same data for no other reason then just trying it out.
     data[f'SMA_{sma_time_period}'] = data[f'SMA_{sma_time_period}'].fillna(0)
     data[f'EMA_{ema_time_period}'] = data[f'EMA_{ema_time_period}'].fillna(0)
+    data[f'SMA_{sma_time_period}_gt_EMA{ema_time_period}'] = data[f'SMA_{sma_time_period}_gt_EMA{ema_time_period}'].fillna(
+        0)
     data[f'RSI_{rsi_time_period}'] = data[f'RSI_{rsi_time_period}'].fillna(0)
     data['OBV'] = obv['OBV'].fillna(0)
     data[f'ROC_{roc_time_period}'] = data[f'ROC_{roc_time_period}'].fillna(0)
