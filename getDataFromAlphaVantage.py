@@ -86,6 +86,7 @@ def get_indicators(symbol: str, data: pd.DataFrame):
     data[f'RSI_{rsi_time_period}'] = data[f'RSI_{rsi_time_period}'].fillna(0)
     data['OBV'] = obv['OBV'].fillna(0)
     data[f'ROC_{roc_time_period}'] = data[f'ROC_{roc_time_period}'].fillna(0)
+    data[f'ROC_BOOL'] = (data[f'ROC_{roc_time_period}'] > 0).astype(int)
 
     return data
 
@@ -98,12 +99,16 @@ if __name__ == '__main__':
     # filename = f'./data-{symbol}-{date.today()}.csv'
     filename = f'./data.csv'
     data: pd.DataFrame = load_time_series(symbol=symbol)
-    data.drop(['4. close', '7. dividend amount',
+    # data.drop(['4. close', '7. dividend amount',
+    #           '8. split coefficient'], axis=1, inplace=True)
+    data.drop(['5. adjusted_close','7. dividend amount',
               '8. split coefficient'], axis=1, inplace=True)
     data: pd.DataFrame = get_indicators(symbol=symbol, data=data)
 
     data.columns = data.columns.str.replace(' ', '_')
     data.columns = data.columns.str.replace('[0-9]\.\_', '')
+
+    data = data.sort_values(['date'], ascending=[True])
 
     if os.path.isfile(filename):
         os.remove(filename)
