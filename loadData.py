@@ -1,4 +1,5 @@
 import os
+from datetime import date
 
 import dotenv
 from alpha_vantage.techindicators import TechIndicators
@@ -6,7 +7,6 @@ from alpha_vantage.timeseries import TimeSeries
 from pandas import DataFrame
 
 dotenv.load_dotenv()
-filename = "data_thomas.csv"
 key = os.environ['KEY']
 symbol = 'AMD'
 output_size = 'full'
@@ -17,14 +17,14 @@ df = ts.get_daily_adjusted(symbol, output_size)[0].sort_index(axis=0, ascending=
 df = DataFrame(df)
 
 ti = TechIndicators(key=key, output_format='pandas')
-sma_time_period = 20
-ema_time_period = 20
-rsi_time_period = 20
+sma_time_period = 5
+ema_time_period = 5
+rsi_time_period = 5
 roc_time_period = 1
-adx_time_period = 20
-cci_time_period = 20
-aroon_time_period = 20
-bbands_time_period = 20
+adx_time_period = 5
+cci_time_period = 5
+aroon_time_period = 5
+bbands_time_period = 5
 
 df['roc'], _ = ti.get_roc(symbol=symbol, time_period=roc_time_period)
 df['sma'], _ = ti.get_sma(symbol=symbol, time_period=sma_time_period)
@@ -53,4 +53,4 @@ df['ad'], _ = ti.get_ad(symbol=symbol)
 
 df['shifted_ROC_BOOL'] = (df['roc'].shift(-1) >= 0).astype(int)
 
-df.to_csv(filename)
+df.to_csv("dataload_" + str(date.today()) + ".csv")
